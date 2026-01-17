@@ -13,7 +13,7 @@ export default function ItemDetails() {
   const [item, setItem] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/items')
+  fetch('/api/items')
       .then((res) => res.json())
       .then((data) => {
         const foundItem = data.find((x) => x.id === parseInt(id) || x._id === id);

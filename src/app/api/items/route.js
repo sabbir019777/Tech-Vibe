@@ -422,6 +422,5 @@ export async function GET() {
     ]
   };
 
-  // ফ্রন্টএন্ড যাতে সরাসরি Array পায়, তাই আমরা data.items রিটার্ন করছি
   return NextResponse.json(data.items);
 }
