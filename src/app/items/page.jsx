@@ -51,7 +51,9 @@ export default function ItemsPage() {
       );
     }
 
-    // Sort logic
+ 
+
+    
     if (sortBy === "price-low") {
       result.sort((a, b) => a.price - b.price);
     } else if (sortBy === "price-high") {
@@ -72,7 +74,9 @@ export default function ItemsPage() {
 
   return (
     <div className="min-h-screen bg-[#050505] relative overflow-hidden pb-32">
-      {/* Background Decor */}
+
+
+
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none"></div>
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/5 blur-[150px] rounded-full pointer-events-none"></div>
 
