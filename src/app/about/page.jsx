@@ -108,7 +108,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ---  Our Mission --- */}
+
+
       <section className="py-24 px-6 relative">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           
@@ -126,6 +127,8 @@ export default function AboutPage() {
               />
             </div>
           </div>
+
+
 
           <div className="order-1 lg:order-2 space-y-6">
             <h2 className="text-4xl font-bold text-white">
