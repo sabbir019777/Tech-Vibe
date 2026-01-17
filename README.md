@@ -1,68 +1,48 @@
-# 🚀 TechVibe - Next-Gen Gadget Store
+# ⚡ TechVibe - Modern E-Commerce Solution
 
-**TechVibe** is a futuristic e-commerce web application built with **Next.js 14** and **Express.js**. It features a modern "Cyberpunk" aesthetic with glassmorphism effects, providing a seamless shopping experience for high-end gadgets.
+![Next.js](https://img.shields.io/badge/Next.js-14.0-black) ![React](https://img.shields.io/badge/React-18.0-blue) ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0-cyan) ![Node.js](https://img.shields.io/badge/Node.js-Backend-green)
 
----
-
-## 📋 Table of Contents
-- [Project Description](#-project-description)
-- [Features](#-key-features)
-- [Tech Stack](#-tech-stack)
-- [Installation & Setup](#-installation--setup)
-- [Route Summary](#-route-summary)
-- [Authentication](#-authentication)
+**TechVibe** is a futuristic, full-stack e-commerce web application designed to demonstrate dynamic data handling, secure authentication, and real-time state management. It features a cyberpunk-inspired UI with seamless shopping cart functionality and user profile management.
 
 ---
 
-## 📖 Project Description
-TechVibe allows users to browse a collection of premium gadgets, view detailed specifications, and manage a shopping cart. The application implements a hybrid architecture where the frontend handles the UI and state management, while a custom Express.js server manages the product database (JSON). It includes protected routes, middleware-based security, and a persistent cart system.
+## 🚀 Features
+
+### 🔐 Authentication System (Hybrid)
+- **Google OAuth:** Secure login using NextAuth.js with Google Provider.
+- **Mock Login System:** Built-in "Mock Login" for examiners/testers to access the system without Google credentials.
+- **Session Persistence:** Uses Cookies and Session storage to keep users logged in.
+
+### 🛒 Smart Cart Management
+- **User-Isolated Carts:** Data does not mix between users. A Google user's cart is separate from a Mock user's cart.
+- **Real-Time Updates:** The Navbar cart badge updates instantly upon adding/removing items using custom event listeners.
+- **Dynamic Calculation:** Automatic total price calculation and item sorting (Price Low-High/High-Low).
+- **Persistent Storage:** Cart data is saved in `localStorage` so data isn't lost on refresh.
+
+### 👤 Profile Management
+- **Dynamic Profile Rendering:** Displays Google Image for OAuth users and Mock Image for manual users.
+- **Update Profile:** Users can update their display name, bio, and avatar link.
+- **Visual Feedback:** Instant preview of profile changes before saving.
+
+### 📦 Product & Inventory
+- **Server-Side & Client-Side Fetching:** Items are fetched from a custom Node.js/Express backend.
+- **Search & Filter:** Real-time search functionality and price sorting.
+- **Detailed View:** Dedicated product details page with "Add to Cart" functionality.
 
 ---
 
-## ✨ Key Features
+## 🛠 Tech Stack
 
-### 1. 🛍️ Product Management
-- **Dynamic Listing:** Fetches product data from the backend API in real-time.
-- **Reverse Chronological Order:** Newly added products appear first.
-- **Detailed View:** Dedicated dynamic route `items/[id]` for full product specifications.
-
-### 2. 🛒 Shopping Cart System
-- **Guest Cart:** Users can add items to the cart without logging in (LocalStorage based).
-- **Persistent State:** Cart data remains saved even after page refreshes.
-- **Secure Checkout:** The "Proceed to Checkout" action is protected and requires user authentication.
-- **Action Control:** Users cannot add items to the cart from the details page unless logged in.
-
-### 3. 🔐 Authentication & Security
-- **Mock Login System:** Hardcoded admin credentials for demonstration.
-- **Middleware Protection:** The `/add-item` route is strictly protected using Next.js Middleware.
-- **Login Redirects:** Unauthenticated users are automatically redirected to the login page when attempting restricted actions (e.g., Checkout, Add Item).
-
-### 4. 🎨 UI/UX Design
-- **Futuristic Theme:** Dark mode with Neon Cyan/Purple accents.
-- **Interactive Elements:** Slideshows in About/Home pages, toast notifications for actions.
-- **Responsive Design:** Fully optimized for Mobile, Tablet, and Desktop.
+- **Frontend:** Next.js (App Router), React.js
+- **Styling:** Tailwind CSS, DaisyUI (optional if used)
+- **State Management:** React Hooks (`useState`, `useEffect`, `useContext`)
+- **Backend:** Node.js, Express.js
+- **Authentication:** NextAuth.js
+- **Notifications:** React Hot Toast
 
 ---
 
-## 💻 Tech Stack
-
-- **Frontend:** Next.js 14 (App Router), React.js, Tailwind CSS
-- **Backend:** Node.js, Express.js, CORS
-- **Database:** JSON File System (`db.json`)
-- **State Management:** React Hooks (`useState`, `useEffect`), LocalStorage
-- **Utilities:** `react-hot-toast` (Notifications), `js-cookie` (Auth), `lucide-react` (Icons)
-
----
-
-## ⚙️ Installation & Setup
+## ⚙️ Setup & Installation Instructions
 
 Follow these steps to run the project locally.
 
-### Prerequisites
-- Node.js installed on your machine.
-- Git installed.
-
-### 1. Clone the Repository
-```bash
-git clone [https://github.com/your-username/techvibe.git](https://github.com/your-username/techvibe.git)
-cd techvibe

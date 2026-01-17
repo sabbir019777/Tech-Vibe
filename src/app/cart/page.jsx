@@ -4,37 +4,36 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Cookies from "js-cookie";
 import toast, { Toaster } from "react-hot-toast";
-import { useSession } from "next-auth/react"; // ✅ ১. সেশন ইমপোর্ট
+import { useSession } from "next-auth/react";
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
-  const [loading, setLoading] = useState(true); // লোডিং স্টেট
-  const [cartKey, setCartKey] = useState(null); // সঠিক চাবি রাখার জন্য
+  const [loading, setLoading] = useState(true); 
+  const [cartKey, setCartKey] = useState(null);
 
-  const { data: session, status } = useSession(); // ✅ সেশন হুক
-
+  const { data: session, status } = useSession(); 
   useEffect(() => {
-    // সেশন লোডিং অবস্থায় থাকলে অপেক্ষা করো
+
     if (status === "loading") return;
 
     const manualToken = Cookies.get("isLoggedIn");
-    let currentKey = "cart_guest"; // ডিফল্ট
+    let currentKey = "cart_guest";
 
-    // ✅ ২. সঠিক বাক্স (Key) নির্ধারণ করা (Navbar এর মতো একই লজিক)
+
     if (session?.user?.email) {
-       currentKey = `cart_${session.user.email}`; // Google User
+       currentKey = `cart_${session.user.email}`; 
     } else if (manualToken) {
-       currentKey = "cart_mock"; // Mock User
+       currentKey = "cart_mock"; 
     }
 
-    setCartKey(currentKey); // চাবি সেট করলাম যাতে ডিলিট করার সময় লাগে
+    setCartKey(currentKey);
 
-    // ৩. সেই নির্দিষ্ট বাক্স থেকে ডাটা আনা
+
     const storedCart = localStorage.getItem(currentKey);
     
     if (storedCart) {
       const parsedCart = JSON.parse(storedCart);
-      // প্রাইস অনুযায়ী সর্ট (কম থেকে বেশি)
+
       const sortedCart = parsedCart.sort((a, b) => Number(a.price) - Number(b.price));
       setCartItems(sortedCart);
     } else {
@@ -43,17 +42,16 @@ export default function CartPage() {
     
     setLoading(false);
 
-  }, [session, status]); // সেশন পাল্টালে আবার চেক করবে
+  }, [session, status]);
 
   const removeItem = (indexToRemove) => {
     const updatedCart = cartItems.filter((_, index) => index !== indexToRemove);
     setCartItems(updatedCart);
     
-    // ✅ ডিলিট করার সময়ও সঠিক বাক্স ব্যবহার করা
+
     if (cartKey) {
         localStorage.setItem(cartKey, JSON.stringify(updatedCart));
-        
-        // Navbar আপডেট করা
+
         window.dispatchEvent(new Event("storage"));
     }
 
@@ -65,8 +63,8 @@ export default function CartPage() {
   const clearCart = () => {
     setCartItems([]);
     if (cartKey) {
-        localStorage.removeItem(cartKey); // ✅ সঠিক বাক্স ডিলিট
-        window.dispatchEvent(new Event("storage")); // Navbar আপডেট
+        localStorage.removeItem(cartKey); 
+        window.dispatchEvent(new Event("storage"));
     }
     toast.success("Matrix cleared");
   };
@@ -75,7 +73,7 @@ export default function CartPage() {
 
   const handleCheckout = () => {
     const manualToken = Cookies.get("isLoggedIn");
-    // চেকআউট লজিক (লগিন চেক)
+    
     if (!session && !manualToken) {
       toast.error("Identity verification required. Redirecting...", {
         style: { background: '#0a0a0a', color: '#cyan', border: '1px solid #22d3ee/20' }
@@ -105,7 +103,7 @@ export default function CartPage() {
         <div className="mb-12">
           <Link href="/items" className="flex items-center text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 hover:text-cyan-400 transition-all gap-3 group">
             <span className="text-lg group-hover:-translate-x-2 transition-transform">←</span> 
-            <span>Return to Matrix</span>
+            <span>Return to Collection</span>
           </Link>
         </div>
 
@@ -200,7 +198,7 @@ export default function CartPage() {
                  </button>
 
                  <Link href="/items" className="block text-center mt-8 text-[9px] font-black uppercase tracking-[0.2em] text-gray-600 hover:text-white transition-colors">
-                   ← Back to Matrix
+                   ← Back to Collection
                  </Link>
                </div>
                
