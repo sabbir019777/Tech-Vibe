@@ -337,7 +337,7 @@ export async function GET() {
         "description": "High-performance Rode Mic with Pod technology.",
         "long_description": "The all-new Rode Mic Pod X42 is designed for professionals who demand the best. It features state-of-the-art Pod architecture, ensuring lightning-fast performance for all your tasks. With a battery life that lasts up to 24 hours and a durable build quality, this device is your perfect daily companion. It comes with a 2-year official warranty, premium packaging, and exclusive accessories. Serial Number: #2026042. Experience the future of technology with Rode.",
         "price": 199,
-        "image": "https://wilcoxsound.com/wp-content/uploads/2024/11/Rode-PodMicUSB-Black-2.jpg"
+        "image": "https://www.glazerscamera.com/cdn/shop/files/92308_13_1245x700.jpg?v=1685772187"
       },
       {
         "id": 43,

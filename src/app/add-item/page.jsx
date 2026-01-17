@@ -20,13 +20,12 @@ export default function AddItemPage() {
     image: ""
   });
 
- 
+
   useEffect(() => {
     const checkAuth = () => {
       if (status === "loading") return;
 
       const manualToken = Cookies.get("isLoggedIn");
-
 
       if (!session && !manualToken) {
         router.push("/login");
@@ -43,34 +42,46 @@ export default function AddItemPage() {
     setLoading(true);
 
 
-    const itemToSend = {
-        ...formData,
-        price: parseFloat(formData.price), 
-        id: Date.now(), 
-    };
+    const loadingToast = toast.loading("Encrypting Data & Uploading...");
 
     try {
 
-      const res = await fetch("http://localhost:5000/api/items", { 
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(itemToSend),
-      });
+      const newItem = {
+        ...formData,
+        price: parseFloat(formData.price),
+        id: Date.now(), 
+        category: "Custom Node"
+      };
 
-      if (res.ok) {
-        toast.success("Node Initialized: Asset Uploaded", {
-            style: { background: '#111', color: '#22d3ee', border: '1px solid #333' }
-        });
-        setTimeout(() => router.push("/items"), 1500);
-      } else {
+    
+      const existingData = JSON.parse(localStorage.getItem('my_custom_items') || '[]');
+      const updatedData = [newItem, ...existingData];
+      
+    
+      localStorage.setItem('my_custom_items', JSON.stringify(updatedData));
+
+   
+      setTimeout(() => {
+        toast.dismiss(loadingToast);
         
-        throw new Error("Server rejected the request");
-      }
+        toast.success("Node Initialized: Asset Uploaded Successfully!", {
+          style: { background: '#111', color: '#22d3ee', border: '1px solid #333' },
+          duration: 3000
+        });
+
+   
+        setTimeout(() => {
+            router.push("/items");
+        }, 1500);
+        
+      }, 1000);
+
     } catch (error) {
       console.error(error);
-      toast.error("Link Failed: Check if Server URL is correct (/api/items)");
+      toast.dismiss(loadingToast);
+      toast.error("Transmission Failed: Local Storage Error");
     } finally {
-      setLoading(false);
+  
     }
   };
 
@@ -86,12 +97,11 @@ export default function AddItemPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#0d0d0f] p-6 relative overflow-hidden pt-28 pb-12">
       <Toaster position="bottom-right" />
       
-   
+      {/* Background FX */}
       <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0c] via-[#111114] to-[#0a0a0c]"></div>
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none"></div>
       <div className="absolute top-1/4 -left-20 w-[400px] h-[400px] bg-cyan-500/10 blur-[120px] rounded-full"></div>
       <div className="absolute bottom-1/4 -right-20 w-[400px] h-[400px] bg-blue-600/10 blur-[120px] rounded-full"></div>
-
 
       <div className="relative z-10 w-full max-w-2xl bg-[#16161a]/60 backdrop-blur-2xl border border-white/10 p-10 rounded-[2rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
         

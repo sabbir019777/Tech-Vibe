@@ -12,22 +12,33 @@ export default function ItemsPage() {
   const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
-    // ✅ এখানে সংশোধন করা হয়েছে: localhost বাদ দিয়ে শুধু /api/items দেওয়া হয়েছে
+
     fetch('/api/items') 
       .then((res) => res.json())
       .then((data) => {
-        let itemsArray = [];
+        let apiItems = [];
         
-        // ডাটা ফরম্যাট হ্যান্ডেল করা
+
         if (Array.isArray(data)) {
-            itemsArray = data;
+            apiItems = data;
         } else if (data && data.items && Array.isArray(data.items)) {
-            itemsArray = data.items;
+            apiItems = data.items;
         }
 
-        const reversedData = [...itemsArray].reverse();
-        setItems(reversedData);
-        setFilteredItems(reversedData);
+    
+        let localItems = [];
+        if (typeof window !== 'undefined') {
+            const localData = localStorage.getItem('my_custom_items');
+            if (localData) {
+                localItems = JSON.parse(localData);
+            }
+        }
+
+       
+        const combinedItems = [...localItems, ...[...apiItems].reverse()];
+
+        setItems(combinedItems);
+        setFilteredItems(combinedItems);
         setLoading(false);
       })
       .catch(err => {
@@ -36,7 +47,7 @@ export default function ItemsPage() {
       });
   }, []);
 
-  // বাকি কোড (Filter logic, return JSX) একদম আগের মতোই থাকবে...
+
   useEffect(() => {
     let result = [...items];
 
@@ -46,11 +57,13 @@ export default function ItemsPage() {
       );
     }
 
+
     if (sortBy === "price-low") {
       result.sort((a, b) => a.price - b.price);
     } else if (sortBy === "price-high") {
       result.sort((a, b) => b.price - a.price);
-    }
+    } 
+   
 
     setFilteredItems(result);
   }, [searchQuery, sortBy, items]);
@@ -64,7 +77,7 @@ export default function ItemsPage() {
 
   return (
     <div className="min-h-screen bg-[#050505] relative overflow-hidden pb-32">
-      {/* ... আপনার ডিজাইনের বাকি অংশ (JSX) হুবহু আগের মতোই থাকবে ... */}
+      
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none"></div>
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/5 blur-[150px] rounded-full pointer-events-none"></div>
 
@@ -86,6 +99,10 @@ export default function ItemsPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-12 py-3.5 text-xs text-white outline-none focus:border-cyan-500/50 focus:bg-white/[0.08] transition-all"
               />
+         
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
             <div className="relative w-full sm:w-48 group">
               <select 
@@ -115,7 +132,9 @@ export default function ItemsPage() {
                     className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]" 
                   />
                   <div className="absolute top-4 left-4 bg-cyan-500/20 border border-cyan-500/30 px-2 py-0.5 rounded-md backdrop-blur-md">
-                    <p className="text-[7px] font-black text-cyan-400 uppercase tracking-widest">Active Node</p>
+                    <p className="text-[7px] font-black text-cyan-400 uppercase tracking-widest">
+                        {item.category === "Custom Node" ? "Local Asset" : "Active Node"}
+                    </p>
                   </div>
                 </div>
 
