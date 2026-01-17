@@ -60,7 +60,7 @@ const Footer = () => {
             </div>
 
             <p className="text-sm leading-relaxed font-medium text-gray-600">
-              The neural ecosystem for elite asset synchronization. Built for the pioneers of the digital matrix.
+              The neural ecosystem for elite assets synchronization. Built for the pioneers of the digital matrix.
             </p>
             
             <div className="flex space-x-5">
