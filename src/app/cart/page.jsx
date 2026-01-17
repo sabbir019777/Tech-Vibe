@@ -5,89 +5,129 @@ import Link from "next/link";
 import Cookies from "js-cookie";
 import toast, { Toaster } from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
-  const [loading, setLoading] = useState(true); 
-  const [cartKey, setCartKey] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [cartKey, setCartKey] = useState("cart_mock"); 
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  const { data: session, status } = useSession(); 
-  useEffect(() => {
 
-    if (status === "loading") return;
+  const loadCartData = () => {
+
+    let currentKey = "cart_mock";
+    
 
     const manualToken = Cookies.get("isLoggedIn");
-    let currentKey = "cart_guest";
-
+    
 
     if (session?.user?.email) {
-       currentKey = `cart_${session.user.email}`; 
+      currentKey = `cart_${session.user.email}`;
     } else if (manualToken) {
+     
        currentKey = "cart_mock"; 
     }
 
     setCartKey(currentKey);
 
 
-    const storedCart = localStorage.getItem(currentKey);
-    
-    if (storedCart) {
-      const parsedCart = JSON.parse(storedCart);
-
-      const sortedCart = parsedCart.sort((a, b) => Number(a.price) - Number(b.price));
-      setCartItems(sortedCart);
-    } else {
-      setCartItems([]);
+    if (typeof window !== "undefined") {
+      const storedCart = localStorage.getItem(currentKey);
+      
+      if (storedCart) {
+        try {
+          const parsedCart = JSON.parse(storedCart);
+        
+          const sortedCart = parsedCart.sort((a, b) => Number(a.price) - Number(b.price));
+          setCartItems(sortedCart);
+        } catch (e) {
+          console.error("Cart parsing error", e);
+          setCartItems([]);
+        }
+      } else {
+        setCartItems([]);
+      }
     }
-    
     setLoading(false);
+  };
+
+  useEffect(() => {
+    if (status === "loading") return;
+    
+    loadCartData();
+
+    window.addEventListener("storage", loadCartData);
+    
+
+    const handleStorageChange = () => loadCartData();
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
 
   }, [session, status]);
 
-  const removeItem = (indexToRemove) => {
-    const updatedCart = cartItems.filter((_, index) => index !== indexToRemove);
-    setCartItems(updatedCart);
+  const removeItem = (idToRemove) => {
     
+    const updatedCart = cartItems.filter((item) => item.id !== idToRemove);
+    setCartItems(updatedCart);
 
     if (cartKey) {
-        localStorage.setItem(cartKey, JSON.stringify(updatedCart));
+      localStorage.setItem(cartKey, JSON.stringify(updatedCart));
 
-        window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new Event("storage"));
     }
 
     toast.success("Node removed from synchronization", {
-      style: { background: '#0a0a0a', color: '#ff4b4b', border: '1px solid #ff4b4b/20' }
+      style: { background: '#0a0a0a', color: '#ff4b4b', border: '1px solid #ff4b4b/20', fontSize: '12px' }
     });
   };
 
   const clearCart = () => {
     setCartItems([]);
     if (cartKey) {
-        localStorage.removeItem(cartKey); 
-        window.dispatchEvent(new Event("storage"));
+      localStorage.removeItem(cartKey);
+      window.dispatchEvent(new Event("storage"));
     }
     toast.success("Matrix cleared");
   };
 
-  const totalPrice = cartItems.reduce((total, item) => total + Number(item.price), 0);
+
+  const totalPrice = cartItems.reduce((total, item) => {
+    const price = parseFloat(item.price);
+    return total + (isNaN(price) ? 0 : price);
+  }, 0).toFixed(2);
 
   const handleCheckout = () => {
     const manualToken = Cookies.get("isLoggedIn");
-    
+
     if (!session && !manualToken) {
       toast.error("Identity verification required. Redirecting...", {
-        style: { background: '#0a0a0a', color: '#cyan', border: '1px solid #22d3ee/20' }
+        style: { background: '#0a0a0a', color: '#22d3ee', border: '1px solid #22d3ee/20' }
       });
       setTimeout(() => {
-        window.location.href = "/login";
+        router.push("/login");
       }, 1500);
     } else {
-      toast.success("Order Placed: Inventory sync complete!");
+      toast.success("Order Placed: Inventory sync complete!", {
+         duration: 3000,
+         style: { background: '#0a0a0a', color: '#22d3ee', border: '1px solid #22d3ee/20' }
+      });
       clearCart();
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-[#050505] pt-40 text-center text-cyan-400">Syncing Matrix Data...</div>;
+  if (loading) return (
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="text-center">
+            <div className="w-10 h-10 border-2 border-cyan-400/20 border-t-cyan-400 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-400 animate-pulse">Syncing Matrix Data...</p>
+        </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[#050505] text-gray-400 pt-32 pb-20 px-6 relative overflow-hidden">
@@ -108,7 +148,7 @@ export default function CartPage() {
         </div>
 
         {/* Title Section */}
-        <div className="flex items-end gap-6 mb-16">
+        <div className="flex items-end gap-6 mb-16 border-b border-white/5 pb-8">
           <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase">
             Your <span className="text-cyan-400 italic">Cart</span>
           </h1>
@@ -126,9 +166,9 @@ export default function CartPage() {
                </svg>
             </div>
             <h2 className="text-2xl font-bold text-white mb-4 uppercase tracking-tight">Empty Repository</h2>
-            <p className="text-gray-500 mb-10 max-w-xs mx-auto">No assets detected in current session. Initialize shopping to sync data.</p>
+            <p className="text-gray-500 mb-10 max-w-xs mx-auto text-xs font-medium tracking-wide">No assets detected in current session. Initialize shopping to sync data.</p>
             <Link href="/items">
-              <button className="bg-white text-black px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-cyan-400 transition-all shadow-xl">
+              <button className="bg-white text-black px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-cyan-400 hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all shadow-xl">
                 Browse Items
               </button>
             </Link>
@@ -136,22 +176,23 @@ export default function CartPage() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             
-            
+            {/* Cart Items */}
             <div className="lg:col-span-2 space-y-6">
               {cartItems.map((item, index) => (
-                <div key={index} className="group relative bg-white/[0.02] border border-white/5 p-6 rounded-[2rem] flex items-center gap-8 hover:bg-white/[0.04] hover:border-white/10 transition-all duration-500">
-                  <div className="w-28 h-28 bg-[#0a0a0a] rounded-2xl p-4 border border-white/5">
+                <div key={index} className="group relative bg-white/[0.02] border border-white/5 p-6 rounded-[2rem] flex flex-col sm:flex-row items-center gap-8 hover:bg-white/[0.04] hover:border-cyan-500/20 transition-all duration-500">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 bg-[#0a0a0a] rounded-2xl p-4 border border-white/5 flex-shrink-0">
                     <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-lighten" />
                   </div>
-                  <div className="flex-grow">
-                    <h3 className="text-xl font-bold text-white tracking-tight">{item.name}</h3>
-                    <p className="text-cyan-400 font-black text-2xl mt-1 tracking-tighter">${item.price}</p>
-                    <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
-                       <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse"></span> Node Synchronized
-                    </p>
+                  <div className="flex-grow text-center sm:text-left">
+                    <h3 className="text-lg font-bold text-white tracking-tight">{item.name}</h3>
+                    <p className="text-cyan-400 font-black text-xl mt-1 tracking-tighter">${item.price}</p>
+                    <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
+                        <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse"></span> 
+                        <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">Node Synchronized</p>
+                    </div>
                   </div>
                   <button 
-                    onClick={() => removeItem(index)}
+                    onClick={() => removeItem(item.id)}
                     className="w-12 h-12 bg-red-500/10 text-red-500 rounded-xl border border-red-500/20 hover:bg-red-500 hover:text-white transition-all duration-300 flex items-center justify-center group/del"
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -161,11 +202,14 @@ export default function CartPage() {
                 </div>
               ))}
               
-              <button onClick={clearCart} className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 hover:text-red-500 transition-colors ml-4">
-                Purge All Nodes [Clear Matrix]
-              </button>
+              <div className="flex justify-end">
+                  <button onClick={clearCart} className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 hover:text-red-500 transition-colors py-4">
+                    [ Purge Matrix Data ]
+                  </button>
+              </div>
             </div>
 
+            {/* Order Summary */}
             <div className="lg:sticky lg:top-32 h-fit">
                <div className="bg-white/[0.03] backdrop-blur-3xl p-10 rounded-[3rem] border border-white/10 shadow-2xl relative overflow-hidden group">
                  
@@ -186,7 +230,7 @@ export default function CartPage() {
                  
                  <div className="flex justify-between items-end mb-12">
                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Total Value</span>
-                   <span className="text-5xl font-black text-white tracking-tighter">${totalPrice}</span>
+                   <span className="text-4xl md:text-5xl font-black text-white tracking-tighter">${totalPrice}</span>
                  </div>
                  
                  <button 
@@ -205,7 +249,7 @@ export default function CartPage() {
                <div className="mt-8 p-6 bg-white/[0.01] border border-white/5 rounded-2xl flex items-center gap-4">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                   <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest leading-relaxed">
-                    Secure Node SSL Active // End-to-end Encryption verified by TechVibe Matrix.
+                    Secure Node SSL Active // End-to-end Encryption verified.
                   </p>
                </div>
             </div>

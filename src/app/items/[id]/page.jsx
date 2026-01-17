@@ -11,22 +11,50 @@ export default function ItemDetails() {
   const router = useRouter();
   const { data: session } = useSession(); 
   const [item, setItem] = useState(null);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
-  fetch('/api/items')
+
+    fetch('/api/items')
       .then((res) => res.json())
       .then((data) => {
-        const foundItem = data.find((x) => x.id === parseInt(id) || x._id === id);
+        let apiItems = [];
+        
+
+        if (Array.isArray(data)) {
+            apiItems = data;
+        } else if (data && data.items) {
+            apiItems = data.items;
+        }
+
+        let localItems = [];
+        if (typeof window !== 'undefined') {
+            const localData = localStorage.getItem('my_custom_items');
+            if (localData) {
+                localItems = JSON.parse(localData);
+            }
+        }
+
+
+        const allItems = [...localItems, ...apiItems];
+
+        const foundItem = allItems.find((x) => 
+            x.id.toString() === id.toString() || x._id === id
+        );
+
         setItem(foundItem);
+        setLoading(false);
       })
-      .catch(err => console.error("Error fetching item:", err));
+      .catch(err => {
+        console.error("Error fetching item:", err);
+        setLoading(false);
+      });
   }, [id]);
 
   const handleAddToCart = () => {
     if (!item) return;
 
     const manualToken = Cookies.get("isLoggedIn");
-    
 
     if (!session && !manualToken) {
       toast.error("Access Denied: Please Login to Sync Cart", {
@@ -37,7 +65,6 @@ export default function ItemDetails() {
     }
 
     try {
-  
       let cartKey = "";
       if (session?.user?.email) {
          cartKey = `cart_${session.user.email}`; 
@@ -45,11 +72,9 @@ export default function ItemDetails() {
          cartKey = "cart_mock"; 
       }
 
-      
       const storedCart = localStorage.getItem(cartKey);
       const existingCart = storedCart ? JSON.parse(storedCart) : [];
 
-   
       const isExist = existingCart.find((cartItem) => cartItem.id === item.id);
       if (isExist) {
         toast.error("Node Conflict: Item Already in Matrix!", {
@@ -58,11 +83,10 @@ export default function ItemDetails() {
         return;
       }
 
-      
       const updatedCart = [item, ...existingCart]; 
       localStorage.setItem(cartKey, JSON.stringify(updatedCart));
       
-    
+
       window.dispatchEvent(new Event("storage"));
 
       toast.success("Node Synchronized: Redirecting to Matrix...", {
@@ -78,10 +102,19 @@ export default function ItemDetails() {
     }
   };
 
-  if (!item) return (
+
+  if (loading) return (
     <div className="flex flex-col justify-center items-center h-screen bg-[#050505] text-cyan-400">
       <div className="w-12 h-12 border-2 border-cyan-400/20 border-t-cyan-400 rounded-full animate-spin mb-4"></div>
-      <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse">Decrypting Data Matrix...</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse">Scanning Asset Data...</p>
+    </div>
+  );
+
+
+  if (!item) return (
+    <div className="flex flex-col justify-center items-center h-screen bg-[#050505] text-red-500">
+        <h2 className="text-2xl font-bold mb-4">404 - NODE NOT FOUND</h2>
+        <button onClick={() => router.back()} className="text-cyan-400 hover:underline border border-cyan-500/30 px-4 py-2 rounded">Return to Inventory</button>
     </div>
   );
 
@@ -89,7 +122,6 @@ export default function ItemDetails() {
     <div className="min-h-screen bg-[#050505] text-gray-300 relative overflow-hidden pb-24 pt-32">
       <Toaster position="bottom-right" />
       
-      {/* Background Cyber-Grid Decor */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none"></div>
       <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-cyan-500/5 blur-[150px] rounded-full pointer-events-none"></div>
 
@@ -126,14 +158,14 @@ export default function ItemDetails() {
               <div className="relative">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="h-[1px] w-10 bg-cyan-500"></div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-400">Node Asset Verified</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-400">
+                  
+                    {item.category === "Custom Node" || item.id > 1000000000000 ? "Local Asset Verified" : "Node Asset Verified"}
+                  </span>
                 </div>
                 
                 <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-[0.85] uppercase mb-8">
-                  {item.name.split(' ').slice(0, -1).join(' ')} <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-b from-cyan-400 to-blue-600 italic">
-                    {item.name.split(' ').pop()}
-                  </span>
+                  {item.name}
                 </h1>
                 
                 <div className="flex items-center gap-3">
@@ -161,7 +193,7 @@ export default function ItemDetails() {
             <div className="relative mb-14 pl-8 border-l border-white/10">
               <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-4">Core Specifications</h3>
               <p className="text-gray-400 text-lg leading-relaxed font-medium italic opacity-90">
-                {item.long_description || item.description}
+                {item.long_description || item.description || "No further data available for this node."}
               </p>
             </div>
 
