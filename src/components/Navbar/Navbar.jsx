@@ -25,6 +25,7 @@ const Navbar = () => {
 
   const isUserLoggedIn = !!session || manualAuth;
 
+ 
   const getUserImage = () => {
     if (userProfile?.image) return userProfile.image;
     if (session?.user?.image) return session.user.image;
@@ -36,11 +37,13 @@ const Navbar = () => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
 
     const updateStats = () => {
-     
+
       const token = Cookies.get("isLoggedIn");
       const isMockLoggedIn = !!token;
+      
+   
       setManualAuth(isMockLoggedIn);
-
+      
       if (typeof window !== "undefined") {
         let storageSuffix = "guest";
 
@@ -51,26 +54,25 @@ const Navbar = () => {
         }
 
         try {
-          const cartKey = `cart_${storageSuffix}`;
-          const cartData = localStorage.getItem(cartKey);
-          const cart = cartData ? JSON.parse(cartData) : [];
-          setCartCount(cart.length);
+           const cartKey = `cart_${storageSuffix}`;
+           const cartData = localStorage.getItem(cartKey);
+           const cart = cartData ? JSON.parse(cartData) : [];
+           setCartCount(cart.length);
         } catch (error) {
-          console.error("Cart parsing error", error);
-          setCartCount(0);
+           console.error("Cart Error:", error);
+           setCartCount(0);
         }
 
         try {
-          const profileKey = `userProfile_${storageSuffix}`;
-          const profileData = localStorage.getItem(profileKey);
-          const storedProfile = profileData ? JSON.parse(profileData) : null;
-          setUserProfile(storedProfile);
+           const profileKey = `userProfile_${storageSuffix}`;
+           const profileData = localStorage.getItem(profileKey);
+           const storedProfile = profileData ? JSON.parse(profileData) : null;
+           setUserProfile(storedProfile);
         } catch (error) {
-          console.error("Profile parsing error", error);
+           console.error("Profile Error:", error);
         }
       }
     };
-
 
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -80,10 +82,8 @@ const Navbar = () => {
 
     window.addEventListener("scroll", handleScroll);
     document.addEventListener("mousedown", handleClickOutside);
-   
+    
     updateStats();
-
-
     const interval = setInterval(updateStats, 500);
 
     return () => {
@@ -96,25 +96,30 @@ const Navbar = () => {
   const handleLinkClick = () => {
     setIsOpen(false);
     setIsDropdownOpen(false);
-
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }, 100);
   };
 
+
   const handleLogout = async () => {
-    Cookies.remove("isLoggedIn");
-    localStorage.removeItem("userProfile_mock");
+   
+    Cookies.remove("isLoggedIn", { path: '/' });
+    
+    
     setManualAuth(false);
     setUserProfile(null);
     setCartCount(0);
-    
-    await signOut({ redirect: false });
     setIsDropdownOpen(false);
-    
+    setIsOpen(false);
+
+    await signOut({ redirect: false });
+
+
     toast.success("Logged out successfully");
-   
-    router.push("/login");
+    
+
+    router.replace("/login");
   };
 
   const menuItems = [
@@ -133,7 +138,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         
-       
+    
         <Link href="/" onClick={handleLinkClick} className="flex items-center gap-3 group">
           <div className="relative w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-cyan-500/50 transition-all">
             <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +150,7 @@ const Navbar = () => {
           </span>
         </Link>
 
-     
+
         <div className="hidden md:flex items-center gap-1 bg-white/[0.03] p-1.5 rounded-full border border-white/5">
           {menuItems.map((item) => (
             <Link 
@@ -165,12 +170,11 @@ const Navbar = () => {
           )}
         </div>
 
-     
+        {/* ডান পাশের অপশন */}
         <div className="hidden md:flex items-center gap-5">
           
           <ThemeToggle />
 
-     
           <Link href="/cart" onClick={handleLinkClick} className="relative p-3 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/50 hover:bg-white/10 transition-all group">
             <svg className="w-5 h-5 text-gray-400 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -183,7 +187,6 @@ const Navbar = () => {
             )}
           </Link>
 
-     
           {isUserLoggedIn ? (
             <div className="relative" ref={dropdownRef}>
               <button 
@@ -195,7 +198,6 @@ const Navbar = () => {
                 </div>
               </button>
 
-        
               <div className={`absolute right-0 top-14 w-56 bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl p-2 flex flex-col gap-1 backdrop-blur-3xl transform transition-all duration-300 origin-top-right ${isDropdownOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-95 opacity-0 -translate-y-2 pointer-events-none'}`}>
                 
                 <div className="px-4 py-3 border-b border-white/5 mb-1">
@@ -292,7 +294,7 @@ const Navbar = () => {
             {isUserLoggedIn ? (
               <button onClick={handleLogout} className="text-red-500 text-xs font-black uppercase tracking-widest hover:text-red-400">Logout</button>
             ) : (
-
+             
               <Link href="/login" onClick={handleLinkClick} className="text-cyan-400 text-xs font-black uppercase tracking-widest">Login</Link>
             )}
           </div>
