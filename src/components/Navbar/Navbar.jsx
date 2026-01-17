@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation"; 
+
 import Cookies from "js-cookie";
 import { useSession, signOut } from "next-auth/react";
 import toast from "react-hot-toast";
@@ -19,13 +20,12 @@ const Navbar = () => {
   const [userProfile, setUserProfile] = useState(null);
 
   const pathname = usePathname();
-  const router = useRouter();
-  const dropdownRef = useRef(null);
 
+  
+  const dropdownRef = useRef(null);
 
   const isUserLoggedIn = !!session || manualAuth;
 
- 
   const getUserImage = () => {
     if (userProfile?.image) return userProfile.image;
     if (session?.user?.image) return session.user.image;
@@ -37,11 +37,9 @@ const Navbar = () => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
 
     const updateStats = () => {
-
       const token = Cookies.get("isLoggedIn");
       const isMockLoggedIn = !!token;
       
-   
       setManualAuth(isMockLoggedIn);
       
       if (typeof window !== "undefined") {
@@ -102,10 +100,13 @@ const Navbar = () => {
   };
 
 
+  
   const handleLogout = async () => {
-   
+
+    
     Cookies.remove("isLoggedIn", { path: '/' });
     
+
     
     setManualAuth(false);
     setUserProfile(null);
@@ -113,13 +114,12 @@ const Navbar = () => {
     setIsDropdownOpen(false);
     setIsOpen(false);
 
-    await signOut({ redirect: false });
 
-
-    toast.success("Logged out successfully");
     
+    toast.success("Logged out successfully");
 
-    router.replace("/login");
+    
+    await signOut({ callbackUrl: "/login" });
   };
 
   const menuItems = [
@@ -138,7 +138,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         
-    
+        {/* Logo */}
         <Link href="/" onClick={handleLinkClick} className="flex items-center gap-3 group">
           <div className="relative w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-cyan-500/50 transition-all">
             <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,7 +150,7 @@ const Navbar = () => {
           </span>
         </Link>
 
-
+        {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-1 bg-white/[0.03] p-1.5 rounded-full border border-white/5">
           {menuItems.map((item) => (
             <Link 
@@ -170,7 +170,7 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* ডান পাশের অপশন */}
+        {/* Right Side Options */}
         <div className="hidden md:flex items-center gap-5">
           
           <ThemeToggle />
@@ -235,14 +235,13 @@ const Navbar = () => {
               </div>
             </div>
           ) : (
-         
             <Link href="/login" onClick={handleLinkClick} className="relative px-8 py-2.5 rounded-xl bg-gray-500 text-black text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 hover:bg-cyan-500 hover:text-black hover:shadow-[0_0_25px_rgba(6,182,212,0.5)] active:scale-95 group overflow-hidden">
               <span className="relative z-10 flex items-center gap-2 font-black uppercase">Login</span>
             </Link>
           )}
         </div>
 
-
+        {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center gap-4">
            <ThemeToggle />
 
@@ -294,7 +293,6 @@ const Navbar = () => {
             {isUserLoggedIn ? (
               <button onClick={handleLogout} className="text-red-500 text-xs font-black uppercase tracking-widest hover:text-red-400">Logout</button>
             ) : (
-             
               <Link href="/login" onClick={handleLinkClick} className="text-cyan-400 text-xs font-black uppercase tracking-widest">Login</Link>
             )}
           </div>
