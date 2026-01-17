@@ -129,7 +129,7 @@ const ProfilePage = () => {
                 onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"} 
               />
             </div>
-            <p className="text-xs text-gray-500 uppercase tracking-widest text-center">Preview Avatar</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest text-center">Preview Avatars</p>
           </div>
 
        
