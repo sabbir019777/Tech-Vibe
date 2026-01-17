@@ -363,14 +363,7 @@ export async function GET() {
         "price": 99,
         "image": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/09/prime-family.001.jpeg?quality=90&strip=all&crop=21.875,0,56.25,100"
       },
-      {
-        "id": 46,
-        "name": "Starlink Dish Standard X46",
-        "description": "High-performance Starlink Dish with Standard technology.",
-        "long_description": "The all-new Starlink Dish Standard X46 is designed for professionals who demand the best. It features state-of-the-art Standard architecture, ensuring lightning-fast performance for all your tasks. With a battery life that lasts up to 24 hours and a durable build quality, this device is your perfect daily companion. It comes with a 2-year official warranty, premium packaging, and exclusive accessories. Serial Number: #2026046. Experience the future of technology with Starlink.",
-        "price": 599,
-        "image": "https://i.pcmag.com/imagery/articles/04tmf1VpItypasEabkAeFPW-1..v1706721449.jpg"
-      },
+    
       {
         "id": 47,
         "name": "Nothing Phone Glyph X47",

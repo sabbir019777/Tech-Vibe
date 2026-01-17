@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
 
 export default function AddItemPage() {
@@ -19,7 +19,6 @@ export default function AddItemPage() {
     long_description: "",
     image: ""
   });
-
 
   useEffect(() => {
     const checkAuth = () => {
@@ -41,11 +40,9 @@ export default function AddItemPage() {
     e.preventDefault();
     setLoading(true);
 
-
     const loadingToast = toast.loading("Encrypting Data & Uploading...");
 
     try {
-
       const newItem = {
         ...formData,
         price: parseFloat(formData.price),
@@ -53,26 +50,22 @@ export default function AddItemPage() {
         category: "Custom Node"
       };
 
-    
       const existingData = JSON.parse(localStorage.getItem('my_custom_items') || '[]');
       const updatedData = [newItem, ...existingData];
       
-    
       localStorage.setItem('my_custom_items', JSON.stringify(updatedData));
 
-   
       setTimeout(() => {
         toast.dismiss(loadingToast);
-        
+   
         toast.success("Node Initialized: Asset Uploaded Successfully!", {
           style: { background: '#111', color: '#22d3ee', border: '1px solid #333' },
-          duration: 3000
+          duration: 4000 
         });
 
-   
         setTimeout(() => {
             router.push("/items");
-        }, 1500);
+        }, 2000);
         
       }, 1000);
 
@@ -81,7 +74,7 @@ export default function AddItemPage() {
       toast.dismiss(loadingToast);
       toast.error("Transmission Failed: Local Storage Error");
     } finally {
-  
+   
     }
   };
 
@@ -95,9 +88,8 @@ export default function AddItemPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0d0d0f] p-6 relative overflow-hidden pt-28 pb-12">
-      <Toaster position="bottom-right" />
       
-      {/* Background FX */}
+      
       <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0c] via-[#111114] to-[#0a0a0c]"></div>
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none"></div>
       <div className="absolute top-1/4 -left-20 w-[400px] h-[400px] bg-cyan-500/10 blur-[120px] rounded-full"></div>

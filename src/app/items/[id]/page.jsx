@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast'; 
 import Cookies from 'js-cookie';
 import { useSession } from "next-auth/react";
 
@@ -14,13 +14,11 @@ export default function ItemDetails() {
   const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
-
     fetch('/api/items')
       .then((res) => res.json())
       .then((data) => {
         let apiItems = [];
         
-
         if (Array.isArray(data)) {
             apiItems = data;
         } else if (data && data.items) {
@@ -34,7 +32,6 @@ export default function ItemDetails() {
                 localItems = JSON.parse(localData);
             }
         }
-
 
         const allItems = [...localItems, ...apiItems];
 
@@ -57,8 +54,10 @@ export default function ItemDetails() {
     const manualToken = Cookies.get("isLoggedIn");
 
     if (!session && !manualToken) {
+  
       toast.error("Access Denied: Please Login to Sync Cart", {
-        style: { background: '#0a0a0a', color: '#ff4b4b', border: '1px solid #ff4b4b/20', fontSize: '12px', fontWeight: 'bold' }
+        style: { background: '#0a0a0a', color: '#ff4b4b', border: '1px solid #ff4b4b/20', fontSize: '12px', fontWeight: 'bold' },
+        duration: 4000 
       });
       router.push("/login");
       return;
@@ -78,7 +77,8 @@ export default function ItemDetails() {
       const isExist = existingCart.find((cartItem) => cartItem.id === item.id);
       if (isExist) {
         toast.error("Node Conflict: Item Already in Matrix!", {
-           style: { background: '#0a0a0a', color: '#facc15', border: '1px solid #facc15/20', fontSize: '12px', fontWeight: 'bold' }
+           style: { background: '#0a0a0a', color: '#facc15', border: '1px solid #facc15/20', fontSize: '12px', fontWeight: 'bold' },
+           duration: 3000
         });
         return;
       }
@@ -86,11 +86,11 @@ export default function ItemDetails() {
       const updatedCart = [item, ...existingCart]; 
       localStorage.setItem(cartKey, JSON.stringify(updatedCart));
       
-
       window.dispatchEvent(new Event("storage"));
 
       toast.success("Node Synchronized: Redirecting to Matrix...", {
-        style: { background: '#0a0a0a', color: '#22d3ee', border: '1px solid #22d3ee/20', fontSize: '12px', fontWeight: 'bold' }
+        style: { background: '#0a0a0a', color: '#22d3ee', border: '1px solid #22d3ee/20', fontSize: '12px', fontWeight: 'bold' },
+        duration: 2000
       });
       
       setTimeout(() => {
@@ -98,7 +98,7 @@ export default function ItemDetails() {
       }, 1000);
 
     } catch (error) {
-      toast.error("Transmission Error!");
+      toast.error("Transmission Error!", { duration: 3000 });
     }
   };
 
@@ -120,7 +120,8 @@ export default function ItemDetails() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-gray-300 relative overflow-hidden pb-24 pt-32">
-      <Toaster position="bottom-right" />
+      
+     
       
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none"></div>
       <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-cyan-500/5 blur-[150px] rounded-full pointer-events-none"></div>
