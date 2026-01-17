@@ -116,7 +116,7 @@ const Features = () => {
               <div className="flex items-center gap-4 mb-3">
                 <div className="w-3 h-3 rounded-full bg-cyan-400 animate-pulse"></div>
                 <div className="text-[10px] text-cyan-400 font-black uppercase tracking-widest">
-                   Syncing Layer: 0{currentImg + 1}
+                   Syncings Layer: 0{currentImg + 1}
                 </div>
               </div>
               <div className="h-1 w-full bg-white/10 rounded-full mb-2">
