@@ -1,48 +1,43 @@
-# ⚡ TechVibe - Modern E-Commerce Solution
+# 💻 Tech-Vibe | Modern E-Commerce Platform
 
-![Next.js](https://img.shields.io/badge/Next.js-14.0-black) ![React](https://img.shields.io/badge/React-18.0-blue) ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0-cyan) ![Node.js](https://img.shields.io/badge/Node.js-Backend-green)
+<p align="center">
+  <img src="https://i.ibb.co/KpPL2PZB/Screenshot-2026-01-20-121025.png" alt="Tech-Vibe Desktop View" width="100%">
+</p>
 
-**TechVibe** is a futuristic, full-stack e-commerce web application designed to demonstrate dynamic data handling, secure authentication, and real-time state management. It features a cyberpunk-inspired UI with seamless shopping cart functionality and user profile management.
+### 🚀 [Live Project Demo](https://tech-vibe-eight.vercel.app)
 
----
+## 📝 Project Overview
+**Tech-Vibe** is a high-performance, responsive e-commerce web application designed for browsing and purchasing the latest technology products. It is built using the **Next.js (App Router)** architecture, ensuring excellent speed, SEO optimization, and a seamless user experience.
 
-## 🚀 Features
+## 📱 Mobile Responsiveness
+<p align="center">
+  <img src="https://i.ibb.co/dNcN0dB/Screenshot-2026-01-20-121121.png" alt="Tech-Vibe Mobile View" width="300px">
+</p>
 
-### 🔐 Authentication System (Hybrid)
-- **Google OAuth:** Secure login using NextAuth.js with Google Provider.
-- **Mock Login System:** Built-in "Mock Login" for examiners/testers to access the system without Google credentials.
-- **Session Persistence:** Uses Cookies and Session storage to keep users logged in.
+## 🛠️ Main Technologies Used
+* **Frontend:** Next.js, React.js, Tailwind CSS.
+* **State Management:** React Hooks.
+* **Backend Support:** Node.js, Express.js (Mock API).
+* **Authentication:** Mock Authentication System.
 
-### 🛒 Smart Cart Management
-- **User-Isolated Carts:** Data does not mix between users. A Google user's cart is separate from a Mock user's cart.
-- **Real-Time Updates:** The Navbar cart badge updates instantly upon adding/removing items using custom event listeners.
-- **Dynamic Calculation:** Automatic total price calculation and item sorting (Price Low-High/High-Low).
-- **Persistent Storage:** Cart data is saved in `localStorage` so data isn't lost on refresh.
+## ✨ Core Features
+* **Dynamic Product Listing:** Category-specific pages with dynamic routing for each product.
+* **Fully Responsive Design:** Optimized for mobile, tablet, and desktop screens using Tailwind CSS.
+* **Modern UI/UX:** A sleek and user-friendly interface designed for a premium shopping experience.
 
-### 👤 Profile Management
-- **Dynamic Profile Rendering:** Displays Google Image for OAuth users and Mock Image for manual users.
-- **Update Profile:** Users can update their display name, bio, and avatar link.
-- **Visual Feedback:** Instant preview of profile changes before saving.
+## 📦 Major Dependencies
+* `next`
+* `react`
+* `tailwind-merge`
+* `lucide-react` (icons)
 
-### 📦 Product & Inventory
-- **Server-Side & Client-Side Fetching:** Items are fetched from a custom Node.js/Express backend.
-- **Search & Filter:** Real-time search functionality and price sorting.
-- **Detailed View:** Dedicated product details page with "Add to Cart" functionality.
+## 🚀 How to Run Locally
 
----
+1. Clone the repository to your machine:
+`git clone https://github.com/sabbir019777/Tech-Vibe.git`
 
-## 🛠 Tech Stack
+2. Install all necessary dependencies:
+`npm install`
 
-- **Frontend:** Next.js (App Router), React.js
-- **Styling:** Tailwind CSS, DaisyUI (optional if used)
-- **State Management:** React Hooks (`useState`, `useEffect`, `useContext`)
-- **Backend:** Node.js, Express.js
-- **Authentication:** NextAuth.js
-- **Notifications:** React Hot Toast
-
----
-
-## ⚙️ Setup & Installation Instructions
-
-Follow these steps to run the project locally.
-
+3. Run the project in development mode:
+`npm run dev`
